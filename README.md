@@ -7,4 +7,4 @@
 ## Prototype view:
 ![Snapshot1](image_2022-06-06_15-55-46.png)
 ## Description
-`I connected an arduino nano module and adafruit lsdsm1 to the i2c protocol. At the moment, this is just a layout implemented on a Bradboard. In the future it is planned to connect GSM module and create a full-fledged prototype.`
+I connected an arduino nano module and adafruit lsdsm1 to the i2c protocol. At the moment, this is just a layout implemented on a Bradboard. In the future it is planned to connect GSM module and create a full-fledged prototype.
