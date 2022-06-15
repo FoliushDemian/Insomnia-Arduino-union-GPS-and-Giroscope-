@@ -7,7 +7,7 @@
 ## Prototype view:
 ![Snapshot1](image_2022-06-06_15-55-46.png)
 ## Description
-I connected an arduino nano module and adafruit lsdsm1 to the i2c protocol. At the moment, this is just a layout implemented on Bradboard, but I have already taken the following impressions from the sensors: 
+I connected the arduino nano module and adafruit lsdsm1 to the i2c protocol. At the moment, this is just a layout implemented on Bradboard, but I have already received the following data from the sensors:
 + Acceleration
 + Magnetic field strength (will not be used in the future)
 + Calculating the change in the angle of inclination relative to the axis when rotating the device.
