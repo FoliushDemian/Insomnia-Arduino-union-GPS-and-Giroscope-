@@ -1,7 +1,7 @@
 # Insomnia-Arduino-union-GPS-and-Giroscope
 ![arduino nano](https://i2.wp.com/www.teachmemicro.com/wp-content/uploads/2019/06/Arduino-Nano-pinout.jpg?fit=1500%2C1500&ssl=1)
 ## GPS module which i use:
-![GPS module](https://images.prom.ua/785520852_w500_h500_gsm-gprs-modul.jpg)
+![gps](https://cdn.shopify.com/s/files/1/2187/3161/products/Ublox_NEO-6M_GPS_UART_Module_Breakout_with_Antenna_2_1024x.png?v=1571708736, "GBS module NEO-6M")
 ## The module I use to determine the accelerometer, magnetometer and gyroscope data:
 ![adafruit lsdsm1](https://cdn-learn.adafruit.com/guides/images/000/001/574/medium800/combo.jpg)
 ## Prototype view:
