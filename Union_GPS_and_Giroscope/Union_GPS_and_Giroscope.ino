@@ -6,6 +6,19 @@
 #include <TinyGPS++.h>
 #include <SoftwareSerial.h>
 
+//#define R_PIN 3
+//#define G_PIN 5  // до для першого виду підсвітки(спокійної)
+//#define B_PIN 6
+
+
+#define LED_R 3 // Pin D3 --> червоний
+#define LED_G 5 // Pin D5 --> зелений   // то для другого виду підсвітки(стробоскопної)
+#define LED_B 6 // Pin D6 --> синій
+
+int red();
+int green(); // то для другого виду підсвітки(стробоскопної)
+int blue();
+
 static const int RXPin = 10, TXPin = 11;
 static const uint32_t GPSBaud = 9600;
 
@@ -25,6 +38,19 @@ void setupSensor()
 
 void setup() 
 {
+//  pinMode(R_PIN, OUTPUT);
+//  pinMode(G_PIN, OUTPUT); // то для першого виду підсвітки(спокійної)
+//  pinMode(B_PIN, OUTPUT);
+
+  pinMode( LED_R, OUTPUT );
+  pinMode( LED_G, OUTPUT );  // то для другого виду підсвітки(стробоскопної)
+  pinMode( LED_B, OUTPUT );
+  
+  analogWrite (LED_R,255);
+  analogWrite (LED_G,255);  // то для другого виду підсвітки(стробоскопної)
+  analogWrite (LED_B,255);
+
+  
   Serial.begin(115200);
   ss.begin(GPSBaud);
 
@@ -48,7 +74,10 @@ void setup()
 
 void loop() 
 {
-  
+  static int counter = 0;
+  counter += 10;
+//  colorWheel(counter);  // то для першого виду підсвітки(спокійної)
+  delay(100);
   lsm.read();   
  
   sensors_event_t a, m, g, temp;
@@ -127,6 +156,101 @@ Serial.println();
 
   if (millis() > 5000 && gps.charsProcessed() < 10)
     Serial.println(F("Дані GPS не отримані: перевірте з'єднання"));
+
+
+
+
+
+
+    // ТО ДЛЯ ДРУГОЇ ПІДСВІТКИ(СТРАБОСКОПНОЇ)
+    //-------------запалюєм і гасим червоний
+{
+  int x = 1;
+  for (int i = 0; i > -1; i = i + x){
+      red(i);
+      if (i == 255) x = -1;             //переключення в сторону гасіння на максимумі свічення
+      delay(5);
+   }
+}
+//-------------запалюєм і гасим зелений
+{
+  int x = 1;
+  for (int i = 0; i > -1; i = i + x){
+      green(i);
+      if (i == 255) x = -1;             // переключення в сторону гасіння на максимумі свічення
+      delay(5);
+   }
+}
+//-------------запалюєм і гасим синій
+{
+  int x = 1;
+  for (int i = 0; i > -1; i = i + x){
+      blue(i);
+      if (i == 255) x = -1;             // переключення в сторону гасіння на максимумі свічення
+      delay(5);
+   }
+}
+
+//------------- мигаємо кожним кольором по три рази
+red(0);
+delay(100);
+red(80);
+delay(100);
+red(0);
+delay(100);
+red(160);
+delay(100);
+red(0);
+delay(100);
+red(255);
+delay(100);
+red(0);
+delay(100);
+green(80);
+delay(100);
+green(0);
+delay(100);
+green(160);
+delay(100);
+green(0);
+delay(100);
+green(255);
+delay(100);
+green(0);
+delay(100);
+blue(80);
+delay(100);
+blue(0);
+delay(100);
+blue(160);
+delay(100);
+blue(0);
+delay(100);
+blue(255);
+delay(100);
+blue(0);
+//-------------мигаємо випадковими кольорами і випадковою яскравістю
+   for (int i=0; i <= 50; i++){
+int color=(random(3)+1);
+if (color=1) {red(random(256)); delay(100);red(0);}
+if (color=2) {green(random(256)); delay(100);green(0);}
+if (color=3) {blue(random(256)); delay(100);blue(0);}
+   }
+}// КІНЕЦЬ VOID LOOP не видалити випадково!!!
+
+
+
+
+void red(int s){
+analogWrite (LED_R,255-s);
+}
+//***************************************************
+void green(int s){
+analogWrite (LED_G,255-s);
+}
+//***************************************************//ТО ДЛЯ ДРУГОГО КОДУ ПІДСВІТКИ(СТРАБОСКОПНОЇ)
+void blue(int s){
+analogWrite (LED_B,255-s);
 }
 
 // This custom version of delay() ensures that the gps object.
@@ -209,3 +333,43 @@ static void printStr(const char *str, int len)
     Serial.print(i<slen ? str[i] : ' ');
   smartDelay(0);
 }
+
+
+
+
+//void colorWheel(int color) {
+//  byte _r, _g, _b;
+//  if (color <= 255) {                       // RED max, green is growing
+//    _r = 255;
+//    _g = color;
+//    _b = 0;
+//  }
+//  else if (color > 255 && color <= 510) {   // GREEN max, red is falling
+//    _r = 510 - color;
+//    _g = 255;
+//    _b = 0;
+//  }
+//  else if (color > 510 && color <= 765) {   // GREEN max, blue is growing
+//    _r = 0;
+//    _g = 255;
+//    _b = color - 510;
+//  }
+//  else if (color > 765 && color <= 1020) {  // BLUE is max, green is falling
+//    _r = 0;
+//    _g = 1020 - color;
+//    _b = 255;
+//  }
+//  else if (color > 1020 && color <= 1275) {   // BLUE is max, red is growing
+//    _r = color - 1020;
+//    _g = 0;
+//    _b = 255;
+//  }
+//  else if (color > 1275 && color <= 1530) { // RED max, blue is falling
+//    _r = 255;
+//    _g = 0;
+//    _b = 1530 - color;
+//  }
+//  analogWrite(R_PIN, 255 - _r);
+//  analogWrite(G_PIN, 255 - _g);
+//  analogWrite(B_PIN, 255 - _b);
+//}
