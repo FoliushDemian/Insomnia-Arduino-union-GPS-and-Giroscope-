@@ -6,13 +6,19 @@
 #include <TinyGPS++.h>
 #include <SoftwareSerial.h>
 
+
+SoftwareSerial sim(6,5);
+int _timeout;
+String _buffer;                                              // ITS ALL FOR GSM MODULE
+String number = "+380680082163"; //-> change with your number
+
 //#define R_PIN 3
 //#define G_PIN 5  // до для першого виду підсвітки(спокійної)
 //#define B_PIN 6
 
 
 #define LED_R 3 // Pin D3 --> червоний
-#define LED_G 5 // Pin D5 --> зелений   // то для другого виду підсвітки(стробоскопної)
+#define LED_G 5 // Pin D5 --> зелений   // то для другого виду підсвітки(страбоскопної)
 #define LED_B 6 // Pin D6 --> синій
 
 int red();
@@ -70,93 +76,102 @@ void setup()
 
 
   setupSensor();
+
+
+  delay(7000); //delay for 7 seconds to make sure the  GSM module get the signal
+  Serial.begin(9600);
+  _buffer.reserve(50);
+  Serial.println("System Started...");
+  sim.begin(9600);
+  delay(1000);
+  Serial.println("Type s to send an SMS, r to receive an SMS, and c to make a Call");
 }
 
 void loop() 
 {
-  static int counter = 0;
-  counter += 10;
-//  colorWheel(counter);  // то для першого виду підсвітки(спокійної)
-  delay(100);
-  lsm.read();   
- 
-  sensors_event_t a, m, g, temp;
-
-  lsm.getEvent(&a, &m, &g, &temp); 
-
-  Serial.print("Accel X: "); Serial.print(a.acceleration.x); Serial.print(" m/s^2 ");
-  Serial.print("\tY: "); Serial.print(a.acceleration.y);     Serial.print(" m/s^2 ");
-  Serial.print("\tZ: "); Serial.print(a.acceleration.z);     Serial.println(" m/s^2 ");
-
-  Serial.print("Mag X: "); Serial.print(m.magnetic.x);   Serial.print(" uT");
-  Serial.print("\tY: "); Serial.print(m.magnetic.y);     Serial.print(" uT");
-  Serial.print("\tZ: "); Serial.print(m.magnetic.z);     Serial.println(" uT");
-
-  Serial.print("Gyro X: "); Serial.print(g.gyro.x);   Serial.print(" rad/s");
-  Serial.print("\tY: "); Serial.print(g.gyro.y);      Serial.print(" rad/s");
-  Serial.print("\tZ: "); Serial.print(g.gyro.z);      Serial.println(" rad/s");
-
-  Serial.println();
-
-  static const double POLITECH_LAT = 49.833333, POLITECH_LON = 24.000000;
-Serial.print("satelits - \t\t\t\t");
-printInt(gps.satellites.value(), gps.satellites.isValid(), 5);          //- інформація про супутники
-Serial.println();
-Serial.print("horizontal accuracy - \t\t\t");
-printFloat(gps.hdop.hdop(), gps.hdop.isValid(), 6, 1);                  // - Точність
-Serial.println();
-Serial.print("latitude and longitude - \t\t\t");
-  printFloat(gps.location.lat(), gps.location.isValid(), 11, 6);
-  Serial.print(" / ");
-  printFloat(gps.location.lng(), gps.location.isValid(), 12, 6);
-Serial.println();
-Serial.print("date and time - \t\t\t\t");
-printDateTime(gps.date, gps.time);
-Serial.println();
-Serial.print("altitude - \t\t");
-printFloat(gps.altitude.meters(), gps.altitude.isValid(), 7, 2);
-Serial.println();
-Serial.print("Direction of movement (compass) - \t");
-printFloat(gps.course.deg(), gps.course.isValid(), 7, 2);
-Serial.println();
-Serial.print("Speed in km. - \t\t\t");
-printFloat(gps.speed.kmph(), gps.speed.isValid(), 6, 2);
-Serial.println();
-Serial.print("Direction - \t\t\t\t");
-  printStr(gps.course.isValid() ? TinyGPSPlus::cardinal(gps.course.deg()) : "*** ", 6);
-Serial.println();
-Serial.print("Distance to the Polytechnic - \t\t\t");
-  unsigned long distanceKmToPolitech =
-    (unsigned long)TinyGPSPlus::distanceBetween(
-      gps.location.lat(),
-      gps.location.lng(),
-      POLITECH_LAT, 
-      POLITECH_LON) / 1000;
-  printInt(distanceKmToPolitech, gps.location.isValid(), 9);
-
-  double courseToPolitech =
-    TinyGPSPlus::courseTo(
-      gps.location.lat(),
-      gps.location.lng(),
-      POLITECH_LAT, 
-      POLITECH_LON);
-
-  printFloat(courseToPolitech, gps.location.isValid(), 7, 2);
-
-Serial.println();
-Serial.print("Distance to the Polytechnic - \t\t\t");  
-
-  const char *cardinalToPolitech = TinyGPSPlus::cardinal(courseToPolitech);
-
-  printStr(gps.location.isValid() ? cardinalToPolitech : "*** ", 6);
-Serial.println();
-  Serial.println("------------------------------------------------------------------");
-  
-  smartDelay(3000);                                                      // Пауза для виводу
-
-  if (millis() > 5000 && gps.charsProcessed() < 10)
-    Serial.println(F("Дані GPS не отримані: перевірте з'єднання"));
-
+//  static int counter = 0;
+//  counter += 10;
+////  colorWheel(counter);  // то для першого виду підсвітки(спокійної)
+//  delay(100);
+//  lsm.read();   
+// 
+//  sensors_event_t a, m, g, temp;
+//
+//  lsm.getEvent(&a, &m, &g, &temp); 
+//
+//  Serial.print("Accel X: "); Serial.print(a.acceleration.x); Serial.print(" m/s^2 ");
+//  Serial.print("\tY: "); Serial.print(a.acceleration.y);     Serial.print(" m/s^2 ");
+//  Serial.print("\tZ: "); Serial.print(a.acceleration.z);     Serial.println(" m/s^2 ");
+//
+//  Serial.print("Mag X: "); Serial.print(m.magnetic.x);   Serial.print(" uT");
+//  Serial.print("\tY: "); Serial.print(m.magnetic.y);     Serial.print(" uT");
+//  Serial.print("\tZ: "); Serial.print(m.magnetic.z);     Serial.println(" uT");
+//
+//  Serial.print("Gyro X: "); Serial.print(g.gyro.x);   Serial.print(" rad/s");
+//  Serial.print("\tY: "); Serial.print(g.gyro.y);      Serial.print(" rad/s");
+//  Serial.print("\tZ: "); Serial.print(g.gyro.z);      Serial.println(" rad/s");
+//
+//  Serial.println();
+//
+//  static const double POLITECH_LAT = 49.833333, POLITECH_LON = 24.000000;
+//Serial.print("satelits - \t\t\t\t");
+//printInt(gps.satellites.value(), gps.satellites.isValid(), 5);          //- інформація про супутники
+//Serial.println();
+//Serial.print("horizontal accuracy - \t\t\t");
+//printFloat(gps.hdop.hdop(), gps.hdop.isValid(), 6, 1);                  // - Точність
+//Serial.println();
+//Serial.print("latitude and longitude - \t\t\t");
+//  printFloat(gps.location.lat(), gps.location.isValid(), 11, 6);
+//  Serial.print(" / ");
+//  printFloat(gps.location.lng(), gps.location.isValid(), 12, 6);
+//Serial.println();
+//Serial.print("date and time - \t\t\t\t");
+//printDateTime(gps.date, gps.time);
+//Serial.println();
+//Serial.print("altitude - \t\t");
+//printFloat(gps.altitude.meters(), gps.altitude.isValid(), 7, 2);
+//Serial.println();
+//Serial.print("Direction of movement (compass) - \t");
+//printFloat(gps.course.deg(), gps.course.isValid(), 7, 2);
+//Serial.println();
+//Serial.print("Speed in km. - \t\t\t");
+//printFloat(gps.speed.kmph(), gps.speed.isValid(), 6, 2);
+//Serial.println();
+//Serial.print("Direction - \t\t\t\t");
+//  printStr(gps.course.isValid() ? TinyGPSPlus::cardinal(gps.course.deg()) : "*** ", 6);
+//Serial.println();
+//Serial.print("Distance to the Polytechnic - \t\t\t");
+//  unsigned long distanceKmToPolitech =
+//    (unsigned long)TinyGPSPlus::distanceBetween(
+//      gps.location.lat(),
+//      gps.location.lng(),
+//      POLITECH_LAT, 
+//      POLITECH_LON) / 1000;
+//  printInt(distanceKmToPolitech, gps.location.isValid(), 9);
+//
+//  double courseToPolitech =
+//    TinyGPSPlus::courseTo(
+//      gps.location.lat(),
+//      gps.location.lng(),
+//      POLITECH_LAT, 
+//      POLITECH_LON);
+//
+//  printFloat(courseToPolitech, gps.location.isValid(), 7, 2);
+//
+//Serial.println();
+//Serial.print("Distance to the Polytechnic - \t\t\t");  
+//
+//  const char *cardinalToPolitech = TinyGPSPlus::cardinal(courseToPolitech);
+//
+//  printStr(gps.location.isValid() ? cardinalToPolitech : "*** ", 6);
+//Serial.println();
+//  Serial.println("------------------------------------------------------------------");
+//  
+//  smartDelay(3000);                                                      // Пауза для виводу
+//
+//  if (millis() > 5000 && gps.charsProcessed() < 10)
+//    Serial.println(F("Дані GPS не отримані: перевірте з'єднання"));
+//
 
 
 
@@ -231,13 +246,30 @@ delay(100);
 blue(0);
 //-------------мигаємо випадковими кольорами і випадковою яскравістю
    for (int i=0; i <= 50; i++){
-int color=(random(3)+1);
-if (color=1) {red(random(256)); delay(100);red(0);}
-if (color=2) {green(random(256)); delay(100);green(0);}
-if (color=3) {blue(random(256)); delay(100);blue(0);}
+    
+    int color=(random(3)+1);
+      if (color=1) {red(random(256)); delay(100);red(0);}
+      if (color=2) {green(random(256)); delay(100);green(0);}
+      if (color=3) {blue(random(256)); delay(100);blue(0);}
    }
-}// КІНЕЦЬ VOID LOOP не видалити випадково!!!
 
+if (Serial.available() > 0)// begin of gsm module code 
+    switch (Serial.read())
+    {
+      case 's':
+        SendMessage();
+        break;
+      case 'r':
+        RecieveMessage();
+        break;
+      case 'c':
+        callNumber();
+        break;
+    }
+  if (sim.available() > 0)
+    Serial.write(sim.read()); // end of gsm module code 
+   
+}// КІНЕЦЬ VOID LOOP не видалити випадково!!!
 
 
 
@@ -373,3 +405,79 @@ static void printStr(const char *str, int len)
 //  analogWrite(G_PIN, 255 - _g);
 //  analogWrite(B_PIN, 255 - _b);
 //}
+
+void SendMessage()                         // BEGIN of gsm module code
+{
+  //Serial.println ("Sending Message");
+  sim.println("AT+CMGF=1");    //Sets the GSM Module in Text Mode
+  delay(1000);
+  //Serial.println ("Set SMS Number");
+  sim.println("AT+CMGS=\"" + number + "\"\r"); //Mobile phone number to send message
+  delay(1000);
+//  String SMS = "Hello, all is working";
+//  sim.println(SMS);
+//  delay(100);
+//  sim.println((char)26);// ASCII code of CTRL+Z
+//  delay(1000);
+  
+
+
+
+  lsm.read();   // ПОТІМ МОЖЕ ДОВЕДЕТЬСЯ ВИДАЛИТИ
+ 
+  sensors_event_t a, m, g, temp;
+
+  lsm.getEvent(&a, &m, &g, &temp); 
+
+//  Serial.print("Accel X: "); Serial.print(a.acceleration.x); Serial.print(" m/s^2 ");
+//  Serial.print("\tY: "); Serial.print(a.acceleration.y);     Serial.print(" m/s^2 ");
+//  Serial.print("\tZ: "); Serial.print(a.acceleration.z);     Serial.println(" m/s^2 ");
+//  Serial.println();  // ПОТІМ МОЖЕ ДОВЕДЕТЬСЯ ВИДАЛИТИ
+
+//  Serial.print("satelits - \t\t\t\t");
+//  printInt(gps.satellites.value(), gps.satellites.isValid(), 5);          //- інформація про супутники
+//  Serial.println();
+//  Serial.print("horizontal accuracy - \t\t\t");
+//  printFloat(gps.hdop.hdop(), gps.hdop.isValid(), 6, 1);                  // - Точність
+//  Serial.println();
+  Serial.print("latitude and longitude - \t\t\t");
+  printFloat(gps.location.lat(), gps.location.isValid(), 11, 6);
+  Serial.print(" / ");
+  printFloat(gps.location.lng(), gps.location.isValid(), 12, 6);
+  Serial.println();
+  Serial.print("date and time - \t\t\t\t");
+  printDateTime(gps.date, gps.time);
+  Serial.println();
+
+
+  delay(100);
+  sim.println((char)26);// ASCII code of CTRL+Z
+  delay(1000); 
+  _buffer = _readSerial();
+}
+void RecieveMessage()
+{
+  Serial.println ("SIM800L Read an SMS");
+  delay (1000);
+  sim.println("AT+CNMI=2,2,0,0,0"); // AT Command to receive a live SMS
+  delay(1000);
+  Serial.write ("Unread Message done");
+}
+String _readSerial() {
+  _timeout = 0;
+  while  (!sim.available() && _timeout < 12000  )
+  {
+    delay(13);
+    _timeout++;
+  }
+  if (sim.available()) {
+    return sim.readString();
+  }
+}
+void callNumber() {
+  sim.print (F("ATD"));
+  sim.print (number);
+  sim.print (F(";\r\n"));
+  _buffer = _readSerial();
+  Serial.println(_buffer);
+}                             // END of gsm module code
